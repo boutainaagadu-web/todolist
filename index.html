@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma To-Do List Vue.js</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; padding: 50px; }
+        .todo-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
+        h2 { text-align: center; color: #333; }
+        .input-group { display: flex; margin-bottom: 1rem; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px 0 0 4px; outline: none; }
+        button.add-btn { padding: 10px; border: none; background: #42b983; color: white; cursor: pointer; border-radius: 0 4px 4px 0; }
+        ul { list-style: none; padding: 0; }
+        li { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .completed { text-decoration: line-through; color: #888; }
+        .delete-btn { background: #ff5252; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="todo-container">
+        <h2>✅ Ma Liste</h2>
+
+        <div class="input-group">
+            <input 
+                v-model="newTask" 
+                @keyup.enter="addTask" 
+                placeholder="Ajouter une tâche..."
+            >
+            <button class="add-btn" @click="addTask">Ajouter</button>
+        </div>
+
+        <ul>
+            <li v-for="(task, index) in tasks" :key="index">
+                <span 
+                    :class="{ completed: task.done }" 
+                    @click="task.done = !task.done"
+                    style="cursor: pointer;"
+                >
+                    {{ task.text }}
+                </span>
+                <button class="delete-btn" @click="removeTask(index)">Supprimer</button>
+            </li>
+        </ul>
+
+        <p v-if="tasks.length === 0" style="text-align: center; color: #999;">
+            Aucune tâche pour le moment !
+        </p>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+
+        createApp({
+            setup() {
+                const newTask = ref('');
+                const tasks = ref([
+                    { text: 'Apprendre les bases de Vue', done: false },
+                    { text: 'Finir mon projet', done: true }
+                ]);
+
+                const addTask = () => {
+                    if (newTask.value.trim() !== '') {
+                        tasks.value.push({
+                            text: newTask.value,
+                            done: false
+                        });
+                        newTask.value = ''; // Réinitialise l'input
+                    }
+                };
+
+                const removeTask = (index) => {
+                    tasks.value.splice(index, 1);
+                };
+
+                return {
+                    newTask,
+                    tasks,
+                    addTask,
+                    removeTask
+                };
+            }
+        }).mount('#app');
+    </script>
+
+</body>
+</html>
